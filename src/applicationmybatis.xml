@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+	">
+	<aop:aspectj-autoproxy />
+	
+	<!-- 配置mybatis -->
+	<!-- 配置数据源 dbcp-->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+        <property name="url" value="jdbc:mysql://localhost:3306/game?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull"></property>
+        <property name="username" value="root"></property>
+        <property name="password" value="root"></property>
+        <property name="maxActive" value="250"></property>
+        <property name="maxIdle" value="30"></property>
+        <property name="maxWait" value="500"></property>
+        <property name="defaultAutoCommit" value="true"></property>
+    </bean>
+    
+   
+	
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="configLocation" value="WEB-INF/classes/mybatis.xml" ></property><!-- WEB-INF/classes/ -->
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    
+   <!-- 基本持久化对象bean -->
+   
+   <bean id="question" class="com.game.mybatis.bean.Question"></bean>
+   <bean id="user" class="com.game.mybatis.bean.User"></bean>
+   <bean id="record" class="com.game.mybatis.bean.Record"></bean>
+   
+   <!-- 基本操作数据库的bean DAO -->
+   
+   <bean id="questiondao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+   		<property name="mapperInterface" value="com.game.mybatis.daobean.QuestionDao"></property>
+   		<property name="sqlSessionFactory" ref="sqlSessionFactory"></property>
+   		
+   </bean>
+   <bean id="userdao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+   		<property name="mapperInterface" value="com.game.mybatis.daobean.UserDao"></property>
+   		<property name="sqlSessionFactory" ref="sqlSessionFactory"></property>
+   </bean>
+   <bean id="recorddao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+   		<property name="mapperInterface" value="com.game.mybatis.daobean.RecordDao"></property>
+   		<property name="sqlSessionFactory" ref="sqlSessionFactory"></property>
+   </bean> 
+    
+   <!-- 具体业务控制器 springdao -->
+   
+   <bean id="questionask" class="com.game.mybatis.springdao.QuestionAsk" scope="singleton">
+   		<property name="questiondao"  ref="questiondao"/>
+   </bean>
+   <bean id="gradeask" class="com.game.mybatis.springdao.GradeAsk" scope="singleton">
+   		<property name="userdao" ref="userdao"/>
+   </bean>
+   <bean id="commitkey" class="com.game.mybatis.springdao.CommitKey" scope="singleton">
+   		<property name="userdao" ref="userdao" />
+   		<property name="questiondao" ref="questiondao" />
+   		<property name="recorddao" ref="recorddao" />
+   </bean> 
+   
+   <!--spring以bean处理的 action -->
+   <bean id="askquestionaction" class="com.game.actions.AskQuestionAction" scope="prototype">
+   		<property name="questionask" ref="questionask" />
+   </bean>
+   
+   <bean id="askgradesaction" class="com.game.actions.AskGradesAction" scope="singleton">
+   		<property name="gradeask" ref="gradeask"/>
+   		<property name="recorddao" ref="recorddao"></property>
+   </bean>
+   
+   <bean id="commitkeyaction" class="com.game.actions.CommitKeyAction" scope="prototype">
+   		<property name="commitkey" ref="commitkey"/> 
+   </bean>
+   
+   
+</beans>
+
+
+
+
+
+
+

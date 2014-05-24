@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.game.mybatis.daobean.RecordDao">
+
+	<insert id="add_record" parameterType="record" timeout="3000" >
+		<selectKey keyProperty="amount" order="BEFORE" resultType="String">
+			select Max(amount)+1 as amount from record
+		</selectKey>
+		insert into record values (#{amount},#{user_ip},#{question_id},#{question_grade},#{commit_time})
+	</insert>
+	
+	<select id="exit_record" parameterType="HashMap" timeout="2000" resultType="record" useCache="true"   >
+		select * from record where user_ip=#{user_ip} and question_id=#{question_id}
+	</select>
+	
+	<select id="question_all" parameterType="String" resultType="String" useCache="false">
+		select question_id from record where user_ip=#{user_ip}
+	</select>
+	
+</mapper>

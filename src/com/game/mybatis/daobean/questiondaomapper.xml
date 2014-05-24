@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.game.mybatis.daobean.QuestionDao">
+	
+	<cache readOnly="true" size="1000" eviction="FIFO" flushInterval="3000000"  >
+	</cache>
+	
+	<select id="getQuestion" parameterType="String" resultType="question" useCache="true" timeout="2000" >
+		select * from question where  question_id = #{question_id}
+	</select>
+	
+	<select id="exit_question" parameterType="String" resultType="Boolean" useCache="true" timeout="2000">
+		select * from question where question_id = #{question_id}
+	</select>
+	
+	<select id="compact_key" parameterType="String" resultType="Boolean"  useCache="true" timeout="2000">
+		select * from question where question_id = #{question_id}	
+	</select>
+</mapper>
